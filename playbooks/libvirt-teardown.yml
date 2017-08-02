@@ -1,0 +1,33 @@
+# This playbook only lets you destroy the VM's undercloud and overcloud.
+# Many times you just need to delete and create the VM's - please use it with
+# custom-libvirt-setup.yml (which is useful to teardown all the VM's)-
+# To use this
+# ./quickstart.sh -p mylibvirt-teardown.yml -n -T all $VIRTHOST
+# ./quickstart.sh -p custom-libvirt-setup.yml -n -w $VIRTHOST
+
+- name: Add the virthost to the inventory
+  hosts: localhost
+  tasks:
+    - name: Add virthost
+      add_host:
+        name: "{{virthost}}"
+        groups: "virthost"
+        ansible_fqdn: "{{ virthost }}"
+        ansible_user: "root"
+        ansible_host: "{{ virthost }}"
+  tags:
+    - provision
+
+- include: teardown-provision.yml
+
+# The `provision.yml` playbook is responsible for
+# creating an inventory entry for our `virthost` and for creating an
+# unprivileged user on that host for use by our virtual environment.
+- include: provision.yml
+
+# These teardown tasks only make sense after running provision.yml,
+# because they assume they are connecting as the `stack` user rather
+# than `root`.
+- include: teardown-nodes.yml
+- include: teardown-environment.yml
+
