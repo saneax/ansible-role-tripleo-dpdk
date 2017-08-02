@@ -1,0 +1,30 @@
+# This playbook only lets you create the VM's undercloud and overcloud.
+# Many times you just need to create the VM's - please use it with
+# custom-libvirt-teardown.yml (which is useful to teardown all the VM's)-
+# To use this
+# /quickstart.sh -p custom-libvirt-setup.yml -b -n -w $VIRTHOST
+
+- name: Add the virthost to the inventory
+  hosts: localhost
+  tasks:
+    - name: Add virthost
+      add_host:
+        name: "{{virthost}}"
+        groups: "virthost"
+        ansible_fqdn: "{{ virthost }}"
+        ansible_user: "root"
+        ansible_host: "{{ virthost }}"
+  tags:
+    - provision
+
+
+- include: teardown-provision.yml
+
+- include: provision.yml
+
+- name:  Setup undercloud, overcloud, and supplemental vms
+  hosts: virthost
+  gather_facts: yes
+  roles:
+    - libvirt/setup
+
