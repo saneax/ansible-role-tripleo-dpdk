@@ -34,6 +34,9 @@ repos:
     filename: rhos.repos
     down_url: http://10.60.19.71/puddle
 
+undercloud_setup: true
 skip_build_images: true
 selinux_enforcing: true
-libvirt_undercloud_create_stack_user: true
+non_root_user_setup: true
+package_installs: true
+hostname_correction: true

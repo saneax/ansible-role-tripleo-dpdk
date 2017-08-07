@@ -28,3 +28,18 @@
   roles:
     - libvirt/setup
 
+# setup for the undercloud
+- name: Setup the undercloud
+  hosts: undercloud
+  gather_facts: no
+  vars:
+    ansible_user: root
+  roles:
+    - { role: undercloud-setup, when: undercloud_setup|bool }
+
+# Deploy the undercloud
+- name:  Deploy the undercloud
+  hosts: undercloud
+  gather_facts: no
+  roles:
+    - undercloud-deploy
