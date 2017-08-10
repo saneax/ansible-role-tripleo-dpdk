@@ -40,3 +40,5 @@ selinux_enforcing: true
 non_root_user_setup: true
 package_installs: true
 hostname_correction: true
+baseos_as_undercloud: true
+repo_run_live: false
