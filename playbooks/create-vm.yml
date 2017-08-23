@@ -1,0 +1,38 @@
+---
+- name: create a VM - Must enter variables vcpus, memory, os[centos,rhel], version[7]
+  hosts: localhost
+  become: yes
+  gather_facts: yes
+  tasks:
+
+    - include_role:
+        name: common
+
+    - name: update cache and update packages
+      yum:
+        name: '*'
+        state: latest
+        update_cache: yes
+
+    - name: install the packages required
+      yum:
+        name: '{{ item }}'
+        state: present
+      with_items:
+        - libvirt
+        - qemu-kvm
+        - libvirt-python
+        - python-lxml
+        - python-netaddr
+        - virt-manager
+        - virt-install
+        - libguestfs-tools
+        - xorg-x11-apps
+        - xauth
+        - virt-viewer
+        - libguestfs-xfs
+
+    - name: create the libvirt network
+      include_role:
+        name: libvirt-network
+

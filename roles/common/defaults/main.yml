@@ -1,0 +1,4 @@
+---
+# defaults file for common# default variables are set here
+libvirt_vcpus: '{{ vcpus | default(2) }}'
+libvirt_memory: '{{ memory | default(2048) }}'

@@ -1,0 +1,6 @@
+---
+# tasks file for common
+- name: publish the basic variables
+  debug:
+    msg: 'vcpus = {{ libvirt_vcpus }}, memory = {{ libvirt_memory }}'
+
