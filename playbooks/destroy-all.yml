@@ -1,0 +1,24 @@
+---
+- name: destroy all the vm's, network and environment
+  hosts: {{ hosts }}
+  become: yes
+  tasks:
+    - debug: var=hostvars[inventory_hostname]
+
+    - name: remove the packages
+    yum:
+      name: '{{ item }}'
+      state: absent
+    with_items:
+      - libvirt
+      - qemu-kvm
+      - libvirt-python
+      - python-lxml
+      - python-netaddr
+      - virt-manager
+      - virt-install
+      - libguestfs-tools
+      - xorg-x11-apps
+      - xauth
+      - virt-viewer
+      - libguestfs-xfs

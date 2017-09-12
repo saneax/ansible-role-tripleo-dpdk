@@ -1,0 +1,7 @@
+---
+- name: t1 testing module of ansible
+  hosts: {{ hosts }}
+  vars:
+    target: {{ "{% if env_target == 'setup' %} 'setup' {% else %} 'destroy' {% endif %}" }}
+  tasks:
+    - debug: var=target

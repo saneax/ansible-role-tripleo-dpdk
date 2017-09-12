@@ -1,9 +1,11 @@
 ---
 - name: create a VM - Must enter variables vcpus, memory, os[centos,rhel], version[7]
-  hosts: localhost
+  hosts: "{{ hosts | default('localhost') }}"
   become: yes
   gather_facts: yes
   tasks:
+
+    - debug: var=hostvars[inventory_hostname]
 
     - include_role:
         name: common
@@ -32,7 +34,10 @@
         - virt-viewer
         - libguestfs-xfs
 
+    - name: try create nested kvm
+      include_role:
+        name: kvm-nested
+
     - name: create the libvirt network
       include_role:
         name: libvirt-network
-
