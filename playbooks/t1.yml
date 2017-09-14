@@ -1,7 +1,28 @@
 ---
 - name: t1 testing module of ansible
-  hosts: {{ hosts }}
+  hosts: "{{ hosts | default('localhost') }}"
   vars:
-    target: {{ "{% if env_target == 'setup' %} 'setup' {% else %} 'destroy' {% endif %}" }}
+    env_target: "{{ etarget | default('') }}"
   tasks:
+    - set_fact:
+        target: "{% if env_target == 'destroy' %}destroy{% else %}setup{% endif %}"
+
     - debug: var=target
+
+    - when: target == "setup"
+      block:
+        - debug:
+            msg: "var={{target}} <--"
+
+        - name: running a command to test the block
+          command:
+            du -sch {{ env_path }}
+          register: package_count
+
+        - debug: var=package_count.stdout
+
+    - name: "run test role"
+      vars:
+        atarget: "{{ target }}"
+      include_role:
+        name: "test"

@@ -1,0 +1,19 @@
+---
+# tasks file for test
+# when: target == "setup"
+# block:
+- name: run command from test role
+  command:
+    ls -l
+  register: lsvar
+
+- debug: var=lsvar
+
+- debug:
+    msg: "I am inside test role of setup block with the target as {{ atarget }}"
+
+#when: atarget == "destroy"
+#block:
+- debug:
+    msg: "I am inside test role of destroy block with the target as {{ atarget }}"
+  when: atarget == "destroy"
