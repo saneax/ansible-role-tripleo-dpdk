@@ -22,7 +22,5 @@
         - debug: var=package_count.stdout
 
     - name: "run test role"
-      vars:
-        atarget: "{{ target }}"
       include_role:
         name: "test"
