@@ -1,43 +1,78 @@
 ---
 # tasks file for libvirt-network
 # Install OVS dependencies
-- name: Install OVS dependencies
-  include_role:
-    name: 'ovs'
+- when: target == "destroy"
+  block:
 
-# Create any OVS Bridges that have been defined
-- name: Create OVS Bridges
-  openvswitch_bridge:
-    bridge: "{{ item.bridge }}"
-    state: present
-  when: item.virtualport_type is defined and item.virtualport_type == "openvswitch"
-  with_items: "{{ networks }}"
-  become: true
+    - name: Stop libvirt networks
+      virt_net:
+        command: stop
+        name: "{{ item.name }}"
+        state: inactive
+      with_items: "{{ networks }}"
+      become: true
 
-# Create the global, root-managed libvirt networks to which we will
-# attach the undercoud and overcloud virtual machines.
-- name: Create libvirt networks
-  virt_net:
-    command: define
-    state: present
-    name: "{{ item.name }}"
-    xml: '{{ lookup("template", "network.xml.j2") }}'
-  with_items: "{{ networks }}"
-  become: true
+    - name: Delete libvirt networks
+      virt_net:
+        command: define
+        state: absent
+        name: "{{ item.name }}"
+        xml: '{{ lookup("template", "network.xml.j2") }}'
+      with_items: "{{ networks }}"
+      become: true
 
-- name: Start libvirt networks
-  virt_net:
-    command: start
-    name: "{{ item.name }}"
-    state: active
-  with_items: "{{ networks }}"
-  become: true
+    - name: Delete OVS Bridges
+      openvswitch_bridge:
+        bridge: "{{ item.bridge }}"
+        state: absent
+      when: item.virtualport_type is defined and item.virtualport_type == "openvswitch"
+      with_items: "{{ networks }}"
+      become: true
 
-- name: Mark  libvirt networks as autostarted
-  virt_net:
-    name: "{{ item.name }}"
-    autostart: "yes"
-  with_items: "{{ networks }}"
-  become: true
-  register: net_autostart
-  ignore_errors: true
+    - name: Un Install OVS dependencies
+      include_role:
+        name: 'ovs'
+
+
+- when: target == "setup"
+  block:
+    - name: Install OVS dependencies
+      include_role:
+        name: 'ovs'
+
+    # Create any OVS Bridges that have been defined
+    - name: Create OVS Bridges
+      openvswitch_bridge:
+        bridge: "{{ item.bridge }}"
+        state: present
+      when: item.virtualport_type is defined and item.virtualport_type == "openvswitch"
+      with_items: "{{ networks }}"
+      become: true
+
+    # Create the global, root-managed libvirt networks to which we will
+    # attach the undercoud and overcloud virtual machines.
+    - name: Create libvirt networks
+      virt_net:
+        command: define
+        state: present
+        name: "{{ item.name }}"
+        xml: '{{ lookup("template", "network.xml.j2") }}'
+      with_items: "{{ networks }}"
+      become: true
+
+    - name: Start libvirt networks
+      virt_net:
+        command: start
+        name: "{{ item.name }}"
+        state: active
+      with_items: "{{ networks }}"
+      become: true
+
+    - name: Mark  libvirt networks as autostarted
+      virt_net:
+        name: "{{ item.name }}"
+        autostart: "yes"
+      with_items: "{{ networks }}"
+      become: true
+      register: net_autostart
+      ignore_errors: true

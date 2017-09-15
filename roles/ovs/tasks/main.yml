@@ -1,14 +1,33 @@
 ---
 # tasks file for ovs
-- name: Install Openvswitch package
-  package:
-    name: "{{ ovs_package }}"
-    state: present
-  become: true
+- when: target == "setup"
+  block:
 
-- name: Start Openvswitch
-  service:
-    name: "{{ ovs_service }}"
-    state: started
-    enabled: true
-  become: true
+    - name: Install Openvswitch package
+      package:
+        name: "{{ ovs_package }}"
+        state: present
+      become: true
+
+    - name: Start Openvswitch
+      service:
+        name: "{{ ovs_service }}"
+        state: started
+        enabled: true
+      become: true
+
+- when: target == "destroy"
+  block:
+
+    - name: Stop Openvswitch
+      service:
+        name: "{{ ovs_service }}"
+        state: stopped
+        enabled: true
+      become: true
+
+    - name: UnInstall Openvswitch package
+      package:
+        name: "{{ ovs_package }}"
+        state: absent
+      become: true
