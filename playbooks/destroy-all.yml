@@ -2,6 +2,8 @@
 - name: destroy all the vm's, network and environment
   hosts: {{ hosts }}
   become: yes
+  vars:
+    target: destroy
   tasks:
     - debug: var=hostvars[inventory_hostname]
 

@@ -1,0 +1,40 @@
+external_network_cidr: 192.168.23.0/24
+dpdknet1_network_cidr: 10.10.0.1/24
+dpdknet2_network_cidr: 10.20.0.1/24
+
+networks:
+  - name: overcloud
+    bridge: brovc
+
+  - name: external
+    bridge: brext
+    forward_mode: nat
+    address: "{{ external_network_cidr|nthhost(1) }}"
+    netmask: "{{ external_network_cidr|ipaddr('netmask') }}"
+    dhcp_range:
+      - "{{ external_network_cidr|nthhost(10) }}"
+      - "{{ external_network_cidr|nthhost(50) }}"
+    nat_port_range:
+      - 1024
+      - 65535
+
+  - name: dpdknet1
+    bridge: dpdk-br1
+    address: "{{ dpdknet1_network_cidr|nthhost(1) }}"
+    netmask: "{{ dpdknet1_network_cidr|ipaddr('netmask') }}"
+    dhcp_range:
+      - "{{ dpdknet1_network_cidr|nthhost(10) }}"
+      - "{{ dpdknet1_network_cidr|nthhost(50) }}"
+
+  - name: dpdknet2
+    bridge: dpdk-br2
+    address: "{{ dpdknet2_network_cidr|nthhost(1) }}"
+    netmask: "{{ dpdknet2_network_cidr|ipaddr('netmask') }}"
+    dhcp_range:
+      - "{{ dpdknet2_network_cidr | nthhost(10) }}"
+      - "{{ dpdknet2_network_cidr | nthhost(50) }}"
+
+
+
+overcloud_libvirt_nic_model: e1000
+libvirt_cpu_mode: host-passthrough

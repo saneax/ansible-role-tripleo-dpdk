@@ -52,16 +52,24 @@
   gather_facts: yes
   roles:
     - tripleo-inventory
-# setup for the undercloud
-#- name: Setup the undercloud
-#  hosts: undercloud
-#  gather_facts: no
-#  vars:
-#    ansible_user: root
-#  roles:
-#    - { role: undercloud-setup, when: undercloud_setup|bool }
 
-# Deploy the undercloud
+- name: Copy undercloud-convert.sh
+  hosts: virthost
+  tasks:
+    - copy:
+        src: "scripts/undercloud-convert.sh"
+        dest: "{{ working_dir }}/undercloud_convert.sh"
+
+- name: |
+    Run a script inside an image via virt-customize without extracting anything
+  hosts: virthost
+  vars:
+    image_to_modify: "{{ working_dir }}/undercloud.qcow2"
+    modify_script: "{{ working_dir }}/undercloud_convert.sh"
+  roles:
+    - modify-image
+
+
 - name:  Deploy the undercloud
   hosts: undercloud
   gather_facts: no
