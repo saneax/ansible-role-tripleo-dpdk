@@ -38,3 +38,4 @@ networks:
 
 overcloud_libvirt_nic_model: e1000
 libvirt_cpu_mode: host-passthrough
+undercloud_generate_service_certificate: false
