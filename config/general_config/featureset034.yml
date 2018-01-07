@@ -39,3 +39,21 @@ networks:
 overcloud_libvirt_nic_model: e1000
 libvirt_cpu_mode: host-passthrough
 undercloud_generate_service_certificate: false
+network_isolation: true
+network_isolation_type: 'single-nic-vlans'
+enable_pacemaker: false
+overcloud_ipv6: false
+
+containerized_overcloud: true
+# This enables the deployment of the overcloud with SSL.
+ssl_overcloud: false
+
+# # If `run_tempest` is `true`, run tempests tests, otherwise do not
+# # run them.
+tempest_config: false
+test_ping: true
+run_tempest: false
+tempest_workers: 4
+# dlrn_hash_tag: current
+# dlrn_hash_tag: current-tripleo
+# docker_image_tag: latest
